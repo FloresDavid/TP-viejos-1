@@ -63,6 +63,15 @@ unsigned long factorizar (int);
 */
 void mostrarTodas(int,int);
 
+/** \brief recibe la opcion deseada, limpia la consola y muestra que opcion se eligio.
+*
+*   \param posee como parametro un numero de tipo entero.
+*
+*   \return no devuelve ningun dato, limpia la consola y muestra la opcion elegida.
+
+*/
+void limpiar (int);
+
 int pedirNumero (void)//Pide un numero y lo devuelve.
 {
     int numero;
@@ -159,5 +168,10 @@ void mostrarTodas(int numeroUno, int numeroDos) //Ejecuta todas las operaciones 
         printf("\nError, No se puede calcular el factorial del numero, es negativo o mayor a 33\n(el tipo de dato solo soporta hasta el numero 33 incluido).\n");
     }
 }
+void limpiar (int opcion)
+    {
+        system("cls");
+        printf("Se ingreso la opcion: %d\n", opcion);
+    }
 
 #endif // FUNCIONES_H_INCLUDED
