@@ -281,15 +281,15 @@ ArrayList* al_clone(ArrayList* this)
 int al_push(ArrayList* this, int index, void* pElement)
 {
     int returnAux = -1;
-    int resize = 0;
+    int retorno=0;
 
-    if (this != NULL && pElement != NULL && index >= 0 && index < this->size)
+    if (this != NULL && pElement != NULL && index >= 0 && index <= this->size)
     {
         if (this->size == this->reservedSize)
         {
-            resize = resizeUp(this);
+            retorno = resizeUp(this);
         }
-        if (resize == 0)
+        if (retorno == 0)
         {
             index = expand(this, index);
             if (index != -1)
@@ -366,15 +366,16 @@ void* al_pop(ArrayList* this,int index)
 {
     void* returnAux = NULL;
     int eliminado;
+
     if(this != NULL && index >= 0 && index <= this->size)//es mayor a 0 y menor al size
+    {
+        returnAux = (*(this->pElements+index));
+        eliminado = al_remove(this, index);
+        if(eliminado == -1)
         {
-            returnAux = (*(this->pElements+index));
-            eliminado = al_remove(this, index);
-            if(eliminado == -1)
-            {
-                returnAux = NULL;
-            }
+            returnAux = NULL;
         }
+    }
     return returnAux;
 }
 
@@ -390,13 +391,20 @@ void* al_pop(ArrayList* this,int index)
 ArrayList* al_subList(ArrayList* this,int from,int to)
 {
     void* returnAux = NULL;
+    void* aux;
 
+    if (this != NULL && from < this->size && from >= 0 && to <= this->size && to > 0 && from < to)
+    {
+        returnAux = al_newArrayList();
+
+        for(int i = from; i < to; i++)
+        {
+            aux = this->get(this, i);
+            this->add(returnAux, aux);
+        }
+    }
     return returnAux ;
 }
-
-
-
-
 
 /** \brief Returns true if pList list contains all of the elements of pList2
  * \param pList ArrayList* Pointer to arrayList
@@ -404,10 +412,37 @@ ArrayList* al_subList(ArrayList* this,int from,int to)
  * \return int Return (-1) if Error [pList or pList2 are NULL pointer]
  *                  - (0) if Not contains All - (1) if is contains All
  */
-int al_containsAll(ArrayList* this,ArrayList* this2)
+int al_containsAll(ArrayList* this, ArrayList* this2)
 {
     int returnAux = -1;
+    int flag = 0;
+    int contador = 0;
 
+    if(this != NULL && this2 != NULL)
+    {
+        for(int i = 0; i < this2->size; i++)
+        {
+            flag = 0;
+            for (int j = 0; j < this->size; j++)
+            {
+                if((*(this->pElements + i)) == (*(this2->pElements + j)))
+                {
+                    flag = 1;
+                    contador++;
+                    break;
+                }
+            }
+            if(flag == 0)
+            {
+                returnAux=0;
+                break;
+            }
+        }
+        if(contador == this->size)
+        {
+            returnAux = 1;
+        }
+    }
     return returnAux;
 }
 
@@ -421,8 +456,44 @@ int al_containsAll(ArrayList* this,ArrayList* this2)
 int al_sort(ArrayList* this, int (*pFunc)(void* ,void*), int order)
 {
     int returnAux = -1;
+    int retorno;
+    void* aux;
 
+    if (this != NULL && pFunc != NULL && (order == 1 || order == 0))
+    {
+        returnAux=0;
+
+        for(int i = 0; i < this->size-1; i++)
+        {
+            for(int j = i+1; j < this->size; j++)
+            {
+                if(order == 0)
+                {
+                    retorno = pFunc((*(this->pElements+i)), (*(this->pElements+j)));
+
+                    if (retorno == 1)
+                    {
+                        aux = (*(this->pElements+i));
+                        (*(this->pElements+i)) = (*(this->pElements+j));
+                        (*(this->pElements+j)) = aux;
+                    }
+                }
+
+                if(order == 1)
+                {
+                    retorno = pFunc((*(this->pElements+i)), (*(this->pElements+j)));
+                    if(retorno == -1)
+                    {
+                        aux = (*(this->pElements+i));
+                        (*(this->pElements+i)) = (*(this->pElements+j));
+                        (*(this->pElements+j)) = aux;
+                    }
+                }
+            }
+        }
+    }
     return returnAux;
+
 }
 
 
